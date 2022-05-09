@@ -24,6 +24,24 @@
     <button type="button" onclick="openFileBrowser()">Open</button>
     <button type="button" onclick="save()">Save</button>
     <button type="button" onclick="saveAS()">Save as</button>
+    <label for="lang">language</label>
+    <select id="lang" onchange="changeLanguage()">
+        <option value="markdown" selected>Markdown</option>
+        <option value="html">HTML</option>
+        <option value="typescript">TypeScript</option>
+        <option value="javascript">JavaScript</option>
+        <option value="php">PHP</option>
+        <option value="vbscript">VBScript</option>
+        <option value="json">JSON</option>
+        <option value="sql">SQL</option>
+        <option value="go">Go</option>
+        <option value="c">C</option>
+        <option value="rust">Rust</option>
+        <option value="css">CSS</option>
+        <option value="python">Python</option>
+        <option value="plaintext">Plaintext</option>
+    </select>
+
     <div id="titles">
         <label id="editor-title" for="mde">Editor</label>
         <label id="preview-title">Preview</label>
@@ -40,34 +58,12 @@
     const $$ = document.querySelectorAll.bind(document)
 
     let editor
+    let data = ""
 
     const monacoEditorReadOnly = {
-        true: "Edit disabled",
-        false: "Edit enabled",
+        true: "Read mode",
+        false: "Edit mode",
     }
-
-    function toggleEdit() {
-        editor.updateOptions({ readOnly: !editor.getRawOptions().readOnly })
-        $("#toggle-edit").innerText = monacoEditorReadOnly[editor.getRawOptions().readOnly]
-    }
-
-    let data = `
-# Hello markdown
-
-Taste Markdown
-
-\`\`\`go
-package main
-
-import (
-    "fmt"
-)
-
-func main() {
-    fmt.Println("안녕, 세상!")
-}
-\`\`\`
-`
 
     const renderer = {
         code(code, langName) {
@@ -81,6 +77,12 @@ func main() {
                 return false
             }
         },
+    }
+
+
+    function toggleEdit() {
+        editor.updateOptions({ readOnly: !editor.getRawOptions().readOnly })
+        $("#toggle-edit").innerText = monacoEditorReadOnly[editor.getRawOptions().readOnly]
     }
 
     marked.use({ renderer })
@@ -179,6 +181,13 @@ func main() {
 
         const handle = await window.showSaveFilePicker(options)
         return handle
+    }
+
+    async function changeLanguage() {
+        const lang = $("#lang").value
+        const model = await editor.getModel()
+
+        monaco.editor.setModelLanguage(model, lang)
     }
 </script>
 
